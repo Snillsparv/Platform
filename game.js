@@ -12,9 +12,15 @@ bgScrollImage.src = 'images/bg_scroll_clean.png';
 const bgCloudsImage = new Image();
 bgCloudsImage.src = 'images/bg_clouds.png';
 
-// Ladda sparv-sprite
-const sparvSprite = new Image();
-sparvSprite.src = 'images/sparv_1.png';
+// Ladda sparv-sprites
+const sparvSprite1 = new Image();
+sparvSprite1.src = 'images/sparv_1.png';
+
+const sparvSprite2 = new Image();
+sparvSprite2.src = 'images/sparv_2.png';
+
+const sparvFlygSprite = new Image();
+sparvFlygSprite.src = 'images/sparv_flyg.png';
 
 // Spelkonstanter
 const GRAVITY = 0.2;
@@ -121,7 +127,7 @@ function checkCollision(rect1, rect2) {
            rect1.y + rect1.height > rect2.y;
 }
 
-// Rita sparven (med sprite)
+// Rita sparven (med animerad sprite)
 function drawPlayer() {
     ctx.save();
     ctx.translate(player.x - camera.x, player.y - camera.y);
@@ -132,11 +138,29 @@ function drawPlayer() {
         ctx.translate(-player.width, 0);
     }
 
-    // Rita sparv-sprite om den är laddad, annars fallback
-    if (sparvSprite.complete && sparvSprite.naturalWidth > 0) {
+    // Välj rätt sprite baserat på spelarens tillstånd
+    let currentSprite = sparvSprite1; // Default
+
+    // Kontrollera om spelaren flyger (i luften + använder flygförmåga)
+    const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
+
+    if (isFlying) {
+        // Använd flygsprite när spelaren bromsar fallet
+        currentSprite = sparvFlygSprite;
+    } else if (player.isGrounded && Math.abs(player.velocityX) > 0) {
+        // Gånganimation: växla mellan sprite 1 och 2 baserat på tid
+        const walkCycle = Math.floor(gameTime / 8) % 2; // Byt var 8:e frame
+        currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
+    } else {
+        // Stående still eller i luften utan att flyga
+        currentSprite = sparvSprite1;
+    }
+
+    // Rita vald sprite om den är laddad, annars fallback
+    if (currentSprite.complete && currentSprite.naturalWidth > 0) {
         // Rita sprite med pixelerad stil
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(sparvSprite, 0, 0, player.width, player.height);
+        ctx.drawImage(currentSprite, 0, 0, player.width, player.height);
     } else {
         // Fallback: enkel brun rektangel medan sprite laddar
         ctx.fillStyle = '#8B4513';
