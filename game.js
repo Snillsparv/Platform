@@ -7,7 +7,7 @@ const bgImage = new Image();
 bgImage.src = 'images/bg.png';
 
 const bgScrollImage = new Image();
-bgScrollImage.src = 'images/bg_scroll.png';
+bgScrollImage.src = 'images/bg_scroll_clean.png';
 
 const bgCloudsImage = new Image();
 bgCloudsImage.src = 'images/bg_clouds.png';
