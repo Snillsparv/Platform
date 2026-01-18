@@ -12,6 +12,10 @@ bgScrollImage.src = 'images/bg_scroll_clean.png';
 const bgCloudsImage = new Image();
 bgCloudsImage.src = 'images/bg_clouds.png';
 
+// Ladda sparv-sprite
+const sparvSprite = new Image();
+sparvSprite.src = 'images/sparv_1.png';
+
 // Spelkonstanter
 const GRAVITY = 0.2;
 const JUMP_FORCE = -10;
@@ -117,47 +121,27 @@ function checkCollision(rect1, rect2) {
            rect1.y + rect1.height > rect2.y;
 }
 
-// Rita sparven (enkel pixel-art stil)
+// Rita sparven (med sprite)
 function drawPlayer() {
     ctx.save();
     ctx.translate(player.x - camera.x, player.y - camera.y);
 
+    // Vänd spriten om spelaren går åt vänster
     if (!player.facingRight) {
         ctx.scale(-1, 1);
         ctx.translate(-player.width, 0);
     }
 
-    // Kropp (brun) - större
-    ctx.fillStyle = '#8B4513';
-    ctx.fillRect(20, 25, 40, 35);
-
-    // Huvud
-    ctx.fillStyle = '#654321';
-    ctx.fillRect(50, 20, 25, 25);
-
-    // Öga (vitt först, sedan pupill)
-    ctx.fillStyle = '#FFF';
-    ctx.fillRect(65, 28, 6, 6);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(67, 30, 3, 3);
-
-    // Näbb
-    ctx.fillStyle = '#FFA500';
-    ctx.fillRect(73, 33, 7, 5);
-
-    // Vinge (animation baserad på tid)
-    const wingOffset = Math.sin(gameTime * 0.2) * 6;
-    ctx.fillStyle = '#A0522D';
-    ctx.fillRect(25, 30 + wingOffset, 20, 10);
-
-    // Stjärt
-    ctx.fillStyle = '#654321';
-    ctx.fillRect(8, 35, 15, 15);
-
-    // Ben (små)
-    ctx.fillStyle = '#FFA500';
-    ctx.fillRect(35, 60, 5, 10);
-    ctx.fillRect(45, 60, 5, 10);
+    // Rita sparv-sprite om den är laddad, annars fallback
+    if (sparvSprite.complete && sparvSprite.naturalWidth > 0) {
+        // Rita sprite med pixelerad stil
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(sparvSprite, 0, 0, player.width, player.height);
+    } else {
+        // Fallback: enkel brun rektangel medan sprite laddar
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(0, 0, player.width, player.height);
+    }
 
     ctx.restore();
 
