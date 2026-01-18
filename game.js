@@ -149,7 +149,7 @@ function drawPlayer() {
         currentSprite = sparvFlygSprite;
     } else if (player.isGrounded && Math.abs(player.velocityX) > 0) {
         // Gånganimation: växla mellan sprite 1 och 2 baserat på tid
-        const walkCycle = Math.floor(gameTime / 8) % 2; // Byt var 8:e frame
+        const walkCycle = Math.floor(gameTime / 15) % 2; // Byt var 15:e frame (långsammare)
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
     } else {
         // Stående still eller i luften utan att flyga
