@@ -2,6 +2,13 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Ladda bakgrundsbilder
+const bgImage = new Image();
+bgImage.src = 'images/bg.png';
+
+const bgScrollImage = new Image();
+bgScrollImage.src = 'images/bg_scroll.png';
+
 // Spelkonstanter
 const GRAVITY = 0.2;
 const JUMP_FORCE = -10;
@@ -259,10 +266,46 @@ function drawObstacles() {
     });
 }
 
-// Rita bakgrund (moln och sol)
+// Rita bakgrund (med bilder)
 function drawBackground() {
-    // Himmel gradient (redan i CSS)
+    // Rita fast bakgrund (bg.png) - täcker hela canvas
+    if (bgImage.complete && bgImage.naturalWidth > 0) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    } else {
+        // Fallback om bilden inte är laddad än - himmel gradient
+        ctx.fillStyle = '#87CEEB';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 
+    // Rita scrollande tileable bakgrund (bg_scroll.png) med parallax
+    if (bgScrollImage.complete && bgScrollImage.naturalWidth > 0) {
+        const tileWidth = bgScrollImage.width;
+        const tileHeight = bgScrollImage.height;
+
+        // Parallax scrolling (rör sig långsammare än kameran)
+        const parallaxSpeed = 0.3; // 30% av kamerans hastighet
+        const bgOffsetX = (camera.x * parallaxSpeed) % tileWidth;
+
+        // Beräkna hur många tiles som behövs för att täcka skärmen
+        const tilesX = Math.ceil(canvas.width / tileWidth) + 2;
+        const tilesY = Math.ceil(canvas.height / tileHeight) + 1;
+
+        // Rita grid av tiles
+        for (let y = 0; y < tilesY; y++) {
+            for (let x = 0; x < tilesX; x++) {
+                ctx.drawImage(
+                    bgScrollImage,
+                    x * tileWidth - bgOffsetX,
+                    y * tileHeight,
+                    tileWidth,
+                    tileHeight
+                );
+            }
+        }
+    }
+
+    // Valfritt: Rita sol och moln ovanpå bakgrunden (kommentera bort om du inte vill ha dem)
+    /*
     // Sol
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
@@ -280,6 +323,7 @@ function drawBackground() {
     drawCloud(800 - (gameTime % 1920), 240);
     drawCloud(1400 - (gameTime % 1920), 140);
     drawCloud(1800 - (gameTime % 1920), 300);
+    */
 }
 
 function drawCloud(x, y) {
