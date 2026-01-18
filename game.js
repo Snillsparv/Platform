@@ -3,8 +3,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Spelkonstanter
-const GRAVITY = 0.45;
-const JUMP_FORCE = -16;
+const GRAVITY = 0.2;
+const JUMP_FORCE = -10;
 const MOVE_SPEED = 4.5;
 const FLY_SLOW_FACTOR = 0.7; // Hur mycket flygningen bromsar fallet (lägre = mer bromsning)
 const MAX_FLY_ENERGY = 100;
@@ -307,15 +307,10 @@ function update() {
         player.facingRight = true;
     }
 
-    // Hoppa
-    if (keys[' '] && player.jumpCount < player.maxJumps) {
-        if (!keys.wasSpacePressed) {
-            player.velocityY = JUMP_FORCE;
-            player.jumpCount++;
-            keys.wasSpacePressed = true;
-        }
-    } else if (!keys[' ']) {
-        keys.wasSpacePressed = false;
+    // Hoppa - automatiskt när man håller mellanslag och är på marken
+    if (keys[' '] && player.isGrounded) {
+        player.velocityY = JUMP_FORCE;
+        player.jumpCount = 1;
     }
 
     // Ladda flyg-energi på marken
