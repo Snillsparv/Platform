@@ -429,7 +429,7 @@ function update() {
         if (!coin.collected && checkCollision(player, coin)) {
             coin.collected = true;
             score += 10;
-            document.getElementById('score').textContent = 'Poäng: ' + score;
+            // Poängräknare borttagen från UI
         }
     });
 
@@ -442,7 +442,7 @@ function update() {
             player.velocityX = 0;
             player.velocityY = 0;
             score = Math.max(0, score - 20);
-            document.getElementById('score').textContent = 'Poäng: ' + score;
+            // Poängräknare borttagen från UI
         }
     });
 
