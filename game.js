@@ -22,6 +22,10 @@ sparvSprite2.src = 'images/sparv_2.png';
 const sparvFlygSprite = new Image();
 sparvFlygSprite.src = 'images/sparv_flyg.png';
 
+// Ladda plattformstiles
+const tilesImage = new Image();
+tilesImage.src = 'images/tiles.png';
+
 // Spelkonstanter
 const GRAVITY = 0.2;
 const JUMP_FORCE = -10;
@@ -194,23 +198,51 @@ function drawPlayer() {
 // Rita plattformar
 function drawPlatforms() {
     platforms.forEach(platform => {
-        ctx.fillStyle = platform.color;
-        ctx.fillRect(
-            platform.x - camera.x,
-            platform.y - camera.y,
-            platform.width,
-            platform.height
-        );
+        // Om tiles-bilden är laddad, använd den, annars fallback till färg
+        if (tilesImage.complete && tilesImage.naturalWidth > 0) {
+            const tileWidth = tilesImage.width;
+            const tileHeight = tilesImage.height;
 
-        // Lägg till kant/skugga
-        ctx.strokeStyle = '#654321';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-            platform.x - camera.x,
-            platform.y - camera.y,
-            platform.width,
-            platform.height
-        );
+            // Pixelerad rendering för tiles
+            ctx.imageSmoothingEnabled = false;
+
+            // Beräkna hur många tiles som behövs för plattformen
+            const tilesX = Math.ceil(platform.width / tileWidth);
+
+            // Rita tiles sida vid sida
+            for (let i = 0; i < tilesX; i++) {
+                const x = platform.x - camera.x + (i * tileWidth);
+                const y = platform.y - camera.y;
+
+                // Klipp sista tilen om den går utanför plattformen
+                const drawWidth = Math.min(tileWidth, platform.width - (i * tileWidth));
+
+                ctx.drawImage(
+                    tilesImage,
+                    0, 0, drawWidth, tileHeight,  // Source (klipp om nödvändigt)
+                    x, y, drawWidth, platform.height  // Destination (sträck höjd till plattform)
+                );
+            }
+        } else {
+            // Fallback: färgad rektangel medan tiles laddar
+            ctx.fillStyle = platform.color;
+            ctx.fillRect(
+                platform.x - camera.x,
+                platform.y - camera.y,
+                platform.width,
+                platform.height
+            );
+
+            // Kant/skugga
+            ctx.strokeStyle = '#654321';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(
+                platform.x - camera.x,
+                platform.y - camera.y,
+                platform.width,
+                platform.height
+            );
+        }
     });
 }
 
