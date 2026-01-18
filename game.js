@@ -3,13 +3,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Spelkonstanter
-const GRAVITY = 1.0;
-const JUMP_FORCE = -10.5;
-const MOVE_SPEED = 7;
-const FLY_FORCE = -2;
+const GRAVITY = 0.65;
+const JUMP_FORCE = -18;
+const MOVE_SPEED = 4.5;
+const FLY_FORCE = -4;
 const MAX_FLY_ENERGY = 100;
-const FLY_ENERGY_DRAIN = 3;
-const FLY_ENERGY_RECHARGE = 2;
+const FLY_ENERGY_DRAIN = 2.5;
+const FLY_ENERGY_RECHARGE = 1.8;
 
 // Spelarens tillstånd
 const player = {
