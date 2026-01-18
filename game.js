@@ -71,33 +71,33 @@ let score = 0;
 let gameTime = 0;
 let gameStarted = false;
 
-// Plattformar
+// Plattformar (bredder justerade för hela tiles)
 const platforms = [
     // Marken
-    { x: 0, y: 1000, width: 7000, height: 80, color: '#8B4513' },
+    { x: 0, y: 1000, width: 7040, height: 80, color: '#8B4513' },
 
     // Startområde
-    { x: 450, y: 880, width: 270, height: 30, color: '#CD853F' },
-    { x: 900, y: 780, width: 230, height: 30, color: '#CD853F' },
-    { x: 1300, y: 670, width: 270, height: 30, color: '#CD853F' },
+    { x: 450, y: 880, width: 240, height: 30, color: '#CD853F' },
+    { x: 900, y: 780, width: 240, height: 30, color: '#CD853F' },
+    { x: 1300, y: 670, width: 240, height: 30, color: '#CD853F' },
 
     // Mitt-sektion med gap
-    { x: 1800, y: 880, width: 300, height: 30, color: '#CD853F' },
-    { x: 2250, y: 750, width: 230, height: 30, color: '#CD853F' },
-    { x: 2700, y: 640, width: 270, height: 30, color: '#CD853F' },
+    { x: 1800, y: 880, width: 320, height: 30, color: '#CD853F' },
+    { x: 2250, y: 750, width: 240, height: 30, color: '#CD853F' },
+    { x: 2700, y: 640, width: 240, height: 30, color: '#CD853F' },
 
     // Hög plattform (kräver flygning)
-    { x: 3150, y: 470, width: 300, height: 30, color: '#FFD700' },
+    { x: 3150, y: 470, width: 320, height: 30, color: '#FFD700' },
 
     // Trappsteg
-    { x: 3750, y: 880, width: 180, height: 30, color: '#CD853F' },
-    { x: 3975, y: 780, width: 180, height: 30, color: '#CD853F' },
-    { x: 4200, y: 680, width: 180, height: 30, color: '#CD853F' },
-    { x: 4425, y: 580, width: 180, height: 30, color: '#CD853F' },
+    { x: 3750, y: 880, width: 160, height: 30, color: '#CD853F' },
+    { x: 3975, y: 780, width: 160, height: 30, color: '#CD853F' },
+    { x: 4200, y: 680, width: 160, height: 30, color: '#CD853F' },
+    { x: 4425, y: 580, width: 160, height: 30, color: '#CD853F' },
 
     // Slutområde
-    { x: 4800, y: 810, width: 450, height: 30, color: '#CD853F' },
-    { x: 5550, y: 880, width: 750, height: 30, color: '#CD853F' },
+    { x: 4800, y: 810, width: 480, height: 30, color: '#CD853F' },
+    { x: 5550, y: 880, width: 720, height: 30, color: '#CD853F' },
 ];
 
 // Mynt att samla
@@ -201,27 +201,28 @@ function drawPlatforms() {
         // Om tiles-bilden är laddad, använd den, annars fallback till färg
         if (tilesImage.complete && tilesImage.naturalWidth > 0) {
             const tileWidth = tilesImage.width;
-            const tileHeight = tilesImage.height;
+            const tileHeight = 80; // Alltid 80px höga tiles
 
             // Pixelerad rendering för tiles
             ctx.imageSmoothingEnabled = false;
 
-            // Beräkna hur många tiles som behövs för plattformen
-            const tilesX = Math.ceil(platform.width / tileWidth);
+            // Beräkna hur många tiles som behövs horisontellt och vertikalt
+            const tilesX = Math.round(platform.width / tileWidth); // Avrunda till närmaste hela antal
+            const tilesY = Math.ceil(platform.height / tileHeight); // Antal tiles vertikalt
 
-            // Rita tiles sida vid sida
-            for (let i = 0; i < tilesX; i++) {
-                const x = platform.x - camera.x + (i * tileWidth);
-                const y = platform.y - camera.y;
+            // Rita tiles i ett grid
+            for (let row = 0; row < tilesY; row++) {
+                for (let col = 0; col < tilesX; col++) {
+                    const x = platform.x - camera.x + (col * tileWidth);
+                    const y = platform.y - camera.y + (row * tileHeight);
 
-                // Klipp sista tilen om den går utanför plattformen
-                const drawWidth = Math.min(tileWidth, platform.width - (i * tileWidth));
-
-                ctx.drawImage(
-                    tilesImage,
-                    0, 0, drawWidth, tileHeight,  // Source (klipp om nödvändigt)
-                    x, y, drawWidth, platform.height  // Destination (sträck höjd till plattform)
-                );
+                    // Rita hela tiles (ingen klippning)
+                    ctx.drawImage(
+                        tilesImage,
+                        0, 0, tileWidth, tilesImage.height,  // Source (hela bilden)
+                        x, y, tileWidth, tileHeight  // Destination (80px höjd)
+                    );
+                }
             }
         } else {
             // Fallback: färgad rektangel medan tiles laddar
