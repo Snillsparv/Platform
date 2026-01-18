@@ -3,9 +3,9 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Spelkonstanter
-const GRAVITY = 0.5;
-const JUMP_FORCE = -10;
-const MOVE_SPEED = 5;
+const GRAVITY = 0.6;
+const JUMP_FORCE = -11;
+const MOVE_SPEED = 7;
 const FLY_FORCE = -8;
 const MAX_FLY_ENERGY = 100;
 const FLY_ENERGY_DRAIN = 2;
@@ -13,10 +13,10 @@ const FLY_ENERGY_RECHARGE = 1;
 
 // Spelarens tillstånd
 const player = {
-    x: 100,
-    y: 100,
-    width: 48,
-    height: 48,
+    x: 150,
+    y: 200,
+    width: 80,
+    height: 80,
     velocityX: 0,
     velocityY: 0,
     isGrounded: false,
@@ -49,53 +49,53 @@ let gameTime = 0;
 // Plattformar
 const platforms = [
     // Marken
-    { x: 0, y: 750, width: 5000, height: 50, color: '#8B4513' },
+    { x: 0, y: 1000, width: 7000, height: 80, color: '#8B4513' },
 
     // Startområde
-    { x: 300, y: 650, width: 180, height: 20, color: '#CD853F' },
-    { x: 600, y: 580, width: 150, height: 20, color: '#CD853F' },
-    { x: 870, y: 500, width: 180, height: 20, color: '#CD853F' },
+    { x: 450, y: 880, width: 270, height: 30, color: '#CD853F' },
+    { x: 900, y: 780, width: 230, height: 30, color: '#CD853F' },
+    { x: 1300, y: 670, width: 270, height: 30, color: '#CD853F' },
 
     // Mitt-sektion med gap
-    { x: 1200, y: 650, width: 200, height: 20, color: '#CD853F' },
-    { x: 1500, y: 560, width: 150, height: 20, color: '#CD853F' },
-    { x: 1800, y: 480, width: 180, height: 20, color: '#CD853F' },
+    { x: 1800, y: 880, width: 300, height: 30, color: '#CD853F' },
+    { x: 2250, y: 750, width: 230, height: 30, color: '#CD853F' },
+    { x: 2700, y: 640, width: 270, height: 30, color: '#CD853F' },
 
     // Hög plattform (kräver flygning)
-    { x: 2100, y: 350, width: 200, height: 20, color: '#FFD700' },
+    { x: 3150, y: 470, width: 300, height: 30, color: '#FFD700' },
 
     // Trappsteg
-    { x: 2500, y: 650, width: 120, height: 20, color: '#CD853F' },
-    { x: 2650, y: 580, width: 120, height: 20, color: '#CD853F' },
-    { x: 2800, y: 510, width: 120, height: 20, color: '#CD853F' },
-    { x: 2950, y: 440, width: 120, height: 20, color: '#CD853F' },
+    { x: 3750, y: 880, width: 180, height: 30, color: '#CD853F' },
+    { x: 3975, y: 780, width: 180, height: 30, color: '#CD853F' },
+    { x: 4200, y: 680, width: 180, height: 30, color: '#CD853F' },
+    { x: 4425, y: 580, width: 180, height: 30, color: '#CD853F' },
 
     // Slutområde
-    { x: 3200, y: 600, width: 300, height: 20, color: '#CD853F' },
-    { x: 3700, y: 650, width: 500, height: 20, color: '#CD853F' },
+    { x: 4800, y: 810, width: 450, height: 30, color: '#CD853F' },
+    { x: 5550, y: 880, width: 750, height: 30, color: '#CD853F' },
 ];
 
 // Mynt att samla
 const coins = [
-    { x: 370, y: 600, width: 25, height: 25, collected: false },
-    { x: 660, y: 530, width: 25, height: 25, collected: false },
-    { x: 930, y: 450, width: 25, height: 25, collected: false },
-    { x: 1270, y: 600, width: 25, height: 25, collected: false },
-    { x: 1560, y: 510, width: 25, height: 25, collected: false },
-    { x: 1860, y: 430, width: 25, height: 25, collected: false },
-    { x: 2170, y: 300, width: 25, height: 25, collected: false },
-    { x: 2570, y: 600, width: 25, height: 25, collected: false },
-    { x: 2720, y: 530, width: 25, height: 25, collected: false },
-    { x: 3020, y: 390, width: 25, height: 25, collected: false },
-    { x: 3350, y: 550, width: 25, height: 25, collected: false },
-    { x: 3900, y: 600, width: 25, height: 25, collected: false },
+    { x: 555, y: 810, width: 40, height: 40, collected: false },
+    { x: 990, y: 710, width: 40, height: 40, collected: false },
+    { x: 1395, y: 600, width: 40, height: 40, collected: false },
+    { x: 1905, y: 810, width: 40, height: 40, collected: false },
+    { x: 2340, y: 680, width: 40, height: 40, collected: false },
+    { x: 2790, y: 570, width: 40, height: 40, collected: false },
+    { x: 3255, y: 400, width: 40, height: 40, collected: false },
+    { x: 3855, y: 810, width: 40, height: 40, collected: false },
+    { x: 4080, y: 710, width: 40, height: 40, collected: false },
+    { x: 4530, y: 510, width: 40, height: 40, collected: false },
+    { x: 5025, y: 740, width: 40, height: 40, collected: false },
+    { x: 5850, y: 810, width: 40, height: 40, collected: false },
 ];
 
 // Hinder
 const obstacles = [
-    { x: 1650, y: 710, width: 40, height: 40, type: 'spike' },
-    { x: 2200, y: 710, width: 40, height: 40, type: 'spike' },
-    { x: 3100, y: 710, width: 40, height: 40, type: 'spike' },
+    { x: 2475, y: 950, width: 60, height: 60, type: 'spike' },
+    { x: 3300, y: 950, width: 60, height: 60, type: 'spike' },
+    { x: 4650, y: 950, width: 60, height: 60, type: 'spike' },
 ];
 
 // Kollisionsdetektering
@@ -116,43 +116,45 @@ function drawPlayer() {
         ctx.translate(-player.width, 0);
     }
 
-    // Kropp (brun) - skalad 1.5x
+    // Kropp (brun) - större
     ctx.fillStyle = '#8B4513';
-    ctx.fillRect(12, 15, 24, 21);
+    ctx.fillRect(20, 25, 40, 35);
 
     // Huvud
     ctx.fillStyle = '#654321';
-    ctx.fillRect(30, 12, 15, 15);
+    ctx.fillRect(50, 20, 25, 25);
 
-    // Öga
+    // Öga (vitt först, sedan pupill)
+    ctx.fillStyle = '#FFF';
+    ctx.fillRect(65, 28, 6, 6);
     ctx.fillStyle = '#000';
-    ctx.fillRect(39, 17, 3, 3);
+    ctx.fillRect(67, 30, 3, 3);
 
     // Näbb
     ctx.fillStyle = '#FFA500';
-    ctx.fillRect(44, 20, 4, 3);
+    ctx.fillRect(73, 33, 7, 5);
 
     // Vinge (animation baserad på tid)
-    const wingOffset = Math.sin(gameTime * 0.2) * 4;
+    const wingOffset = Math.sin(gameTime * 0.2) * 6;
     ctx.fillStyle = '#A0522D';
-    ctx.fillRect(15, 18 + wingOffset, 12, 6);
+    ctx.fillRect(25, 30 + wingOffset, 20, 10);
 
     // Stjärt
     ctx.fillStyle = '#654321';
-    ctx.fillRect(5, 21, 9, 9);
+    ctx.fillRect(8, 35, 15, 15);
 
     // Ben (små)
     ctx.fillStyle = '#FFA500';
-    ctx.fillRect(21, 36, 3, 6);
-    ctx.fillRect(27, 36, 3, 6);
+    ctx.fillRect(35, 60, 5, 10);
+    ctx.fillRect(45, 60, 5, 10);
 
     ctx.restore();
 
     // Rita flyg-energimätare
-    const barWidth = 60;
-    const barHeight = 8;
-    const barX = player.x - camera.x;
-    const barY = player.y - camera.y - 18;
+    const barWidth = 90;
+    const barHeight = 12;
+    const barX = player.x - camera.x - 5;
+    const barY = player.y - camera.y - 25;
 
     // Bakgrund
     ctx.fillStyle = '#333';
@@ -199,7 +201,7 @@ function drawCoins() {
         if (!coin.collected) {
             // Roterande mynt-animation
             const rotation = Math.sin(gameTime * 0.1) * 0.3;
-            const offset = Math.sin(gameTime * 0.15) * 3;
+            const offset = Math.sin(gameTime * 0.15) * 5;
 
             ctx.save();
             ctx.translate(
@@ -211,13 +213,13 @@ function drawCoins() {
             // Guldmynt
             ctx.fillStyle = '#FFD700';
             ctx.beginPath();
-            ctx.arc(0, 0, 10, 0, Math.PI * 2);
+            ctx.arc(0, 0, 16, 0, Math.PI * 2);
             ctx.fill();
 
             // Inre cirkel
             ctx.fillStyle = '#FFA500';
             ctx.beginPath();
-            ctx.arc(0, 0, 6, 0, Math.PI * 2);
+            ctx.arc(0, 0, 10, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.restore();
@@ -264,22 +266,28 @@ function drawBackground() {
     // Sol
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
-    ctx.arc(1200, 100, 50, 0, Math.PI * 2);
+    ctx.arc(1600, 150, 70, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Solstrålar
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+    ctx.beginPath();
+    ctx.arc(1600, 150, 90, 0, Math.PI * 2);
     ctx.fill();
 
     // Moln (rör sig långsammare över den större canvasen)
-    drawCloud(200 - (gameTime % 1400), 120);
-    drawCloud(600 - (gameTime % 1400), 180);
-    drawCloud(1000 - (gameTime % 1400), 100);
-    drawCloud(1300 - (gameTime % 1400), 220);
+    drawCloud(300 - (gameTime % 1920), 160);
+    drawCloud(800 - (gameTime % 1920), 240);
+    drawCloud(1400 - (gameTime % 1920), 140);
+    drawCloud(1800 - (gameTime % 1920), 300);
 }
 
 function drawCloud(x, y) {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
     ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2);
-    ctx.arc(x + 20, y, 25, 0, Math.PI * 2);
-    ctx.arc(x + 40, y, 20, 0, Math.PI * 2);
+    ctx.arc(x, y, 30, 0, Math.PI * 2);
+    ctx.arc(x + 30, y, 38, 0, Math.PI * 2);
+    ctx.arc(x + 60, y, 30, 0, Math.PI * 2);
     ctx.fill();
 }
 
@@ -371,8 +379,8 @@ function update() {
     obstacles.forEach(obstacle => {
         if (checkCollision(player, obstacle)) {
             // Reset till start
-            player.x = 100;
-            player.y = 100;
+            player.x = 150;
+            player.y = 200;
             player.velocityX = 0;
             player.velocityY = 0;
             score = Math.max(0, score - 20);
@@ -386,8 +394,8 @@ function update() {
 
     // Förhindra att spelaren faller utanför skärmen
     if (player.y > canvas.height) {
-        player.x = 100;
-        player.y = 100;
+        player.x = 150;
+        player.y = 200;
         player.velocityX = 0;
         player.velocityY = 0;
     }
