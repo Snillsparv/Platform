@@ -9,6 +9,9 @@ bgImage.src = 'images/bg.png';
 const bgScrollImage = new Image();
 bgScrollImage.src = 'images/bg_scroll.png';
 
+const bgCloudsImage = new Image();
+bgCloudsImage.src = 'images/bg_clouds.png';
+
 // Spelkonstanter
 const GRAVITY = 0.2;
 const JUMP_FORCE = -10;
@@ -266,9 +269,9 @@ function drawObstacles() {
     });
 }
 
-// Rita bakgrund (med bilder)
+// Rita bakgrund (med bilder i lager)
 function drawBackground() {
-    // Rita fast bakgrund (bg.png) - täcker hela canvas
+    // LAGER 1: Fast bakgrund (bg.png) - täcker hela canvas, ingen scrollning
     if (bgImage.complete && bgImage.naturalWidth > 0) {
         ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     } else {
@@ -277,13 +280,13 @@ function drawBackground() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Rita scrollande tileable bakgrund (bg_scroll.png) med parallax
+    // LAGER 2: Långsam scrollande bakgrund (bg_scroll.png) - tileable med parallax
     if (bgScrollImage.complete && bgScrollImage.naturalWidth > 0) {
         const tileWidth = bgScrollImage.width;
         const tileHeight = bgScrollImage.height;
 
-        // Parallax scrolling (rör sig långsammare än kameran)
-        const parallaxSpeed = 0.3; // 30% av kamerans hastighet
+        // Långsam parallax scrolling
+        const parallaxSpeed = 0.25; // 25% av kamerans hastighet
         const bgOffsetX = (camera.x * parallaxSpeed) % tileWidth;
 
         // Beräkna hur många tiles som behövs för att täcka skärmen
@@ -304,26 +307,32 @@ function drawBackground() {
         }
     }
 
-    // Valfritt: Rita sol och moln ovanpå bakgrunden (kommentera bort om du inte vill ha dem)
-    /*
-    // Sol
-    ctx.fillStyle = '#FFD700';
-    ctx.beginPath();
-    ctx.arc(1600, 150, 70, 0, Math.PI * 2);
-    ctx.fill();
+    // LAGER 3: Snabbare scrollande moln (bg_clouds.png) - tileable med snabbare parallax
+    if (bgCloudsImage.complete && bgCloudsImage.naturalWidth > 0) {
+        const tileWidth = bgCloudsImage.width;
+        const tileHeight = bgCloudsImage.height;
 
-    // Solstrålar
-    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
-    ctx.beginPath();
-    ctx.arc(1600, 150, 90, 0, Math.PI * 2);
-    ctx.fill();
+        // Snabbare parallax scrolling (närmare spelaren)
+        const parallaxSpeed = 0.55; // 55% av kamerans hastighet
+        const bgOffsetX = (camera.x * parallaxSpeed) % tileWidth;
 
-    // Moln (rör sig långsammare över den större canvasen)
-    drawCloud(300 - (gameTime % 1920), 160);
-    drawCloud(800 - (gameTime % 1920), 240);
-    drawCloud(1400 - (gameTime % 1920), 140);
-    drawCloud(1800 - (gameTime % 1920), 300);
-    */
+        // Beräkna hur många tiles som behövs för att täcka skärmen
+        const tilesX = Math.ceil(canvas.width / tileWidth) + 2;
+        const tilesY = Math.ceil(canvas.height / tileHeight) + 1;
+
+        // Rita grid av tiles
+        for (let y = 0; y < tilesY; y++) {
+            for (let x = 0; x < tilesX; x++) {
+                ctx.drawImage(
+                    bgCloudsImage,
+                    x * tileWidth - bgOffsetX,
+                    y * tileHeight,
+                    tileWidth,
+                    tileHeight
+                );
+            }
+        }
+    }
 }
 
 function drawCloud(x, y) {
