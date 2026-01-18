@@ -489,13 +489,13 @@ function drawWelcomeScreen() {
     ctx.imageSmoothingEnabled = false;
 
     // Rubrik
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 42px "Courier New", monospace';
     ctx.fillText('VÄLKOMMEN TILL SPARVLAND, SPARVEN!', canvas.width / 2, boxY + 70);
 
     // Huvudtext (SPARVKUNGEN)
     ctx.font = 'bold 36px "Courier New", monospace';
-    ctx.fillStyle = '#FFA500';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillText('HELGAD VARE SPARVKUNGEN,', canvas.width / 2, boxY + 125);
     ctx.fillText('RUNDAST AV ALLA RUNDA TING!!!', canvas.width / 2, boxY + 170);
 
