@@ -459,41 +459,53 @@ function update() {
     }
 }
 
-// Rita välkomstskärm
+// Rita välkomstskärm (retro dialogruta)
 function drawWelcomeScreen() {
-    // Halv-transparent overlay
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Textruta bakgrund
-    const boxWidth = 900;
-    const boxHeight = 350;
+    // Dialogruta längst ner (klassisk stil)
+    const boxWidth = 1400;
+    const boxHeight = 280;
     const boxX = (canvas.width - boxWidth) / 2;
-    const boxY = (canvas.height - boxHeight) / 2;
+    const boxY = canvas.height - boxHeight - 80;
 
-    ctx.fillStyle = 'rgba(139, 69, 19, 0.95)';
+    // Yttre svart ram (retro stil)
+    ctx.fillStyle = '#000';
+    ctx.fillRect(boxX - 8, boxY - 8, boxWidth + 16, boxHeight + 16);
+
+    // Vit mellanram
+    ctx.fillStyle = '#FFF';
+    ctx.fillRect(boxX - 4, boxY - 4, boxWidth + 8, boxHeight + 8);
+
+    // Mörkbrun bakgrund
+    ctx.fillStyle = '#2C1810';
     ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
 
-    // Ram runt rutan
+    // Inre dekorativ ram (guldkant)
     ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 8;
-    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+    ctx.lineWidth = 3;
+    ctx.strokeRect(boxX + 12, boxY + 12, boxWidth - 24, boxHeight - 24);
 
-    // Text
-    ctx.fillStyle = '#FFD700';
-    ctx.font = 'bold 48px Arial';
+    // Pixlig retro-text med monospace font
     ctx.textAlign = 'center';
-    ctx.fillText('Välkommen till Sparvland, Sparven!', canvas.width / 2, boxY + 100);
+    ctx.imageSmoothingEnabled = false;
 
-    ctx.font = 'bold 38px Arial';
+    // Rubrik
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 42px "Courier New", monospace';
+    ctx.fillText('VÄLKOMMEN TILL SPARVLAND, SPARVEN!', canvas.width / 2, boxY + 70);
+
+    // Huvudtext (SPARVKUNGEN)
+    ctx.font = 'bold 36px "Courier New", monospace';
     ctx.fillStyle = '#FFA500';
-    ctx.fillText('Helgad vare SPARVKUNGEN,', canvas.width / 2, boxY + 170);
-    ctx.fillText('rundast av alla runda ting!!!', canvas.width / 2, boxY + 220);
+    ctx.fillText('HELGAD VARE SPARVKUNGEN,', canvas.width / 2, boxY + 125);
+    ctx.fillText('RUNDAST AV ALLA RUNDA TING!!!', canvas.width / 2, boxY + 170);
 
-    // Instruktion
-    ctx.font = '32px Arial';
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillText('Tryck på valfri tangent för att börja', canvas.width / 2, boxY + 300);
+    // Blinkande instruktion (classic retro)
+    const blink = Math.floor(Date.now() / 500) % 2;
+    if (blink) {
+        ctx.font = '28px "Courier New", monospace';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText('▶ TRYCK PÅ VALFRI TANGENT FÖR ATT BÖRJA ◀', canvas.width / 2, boxY + 230);
+    }
 
     ctx.textAlign = 'left';
 }
