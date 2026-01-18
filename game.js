@@ -131,6 +131,18 @@ function checkCollision(rect1, rect2) {
            rect1.y + rect1.height > rect2.y;
 }
 
+// Hämta spelarens hitbox (mindre än spriten)
+function getPlayerHitbox() {
+    const hitboxSize = 60; // Mindre än 80px sprite
+    const offset = (player.width - hitboxSize) / 2;
+    return {
+        x: player.x + offset,
+        y: player.y + offset,
+        width: hitboxSize,
+        height: hitboxSize
+    };
+}
+
 // Rita sparven (med animerad sprite)
 function drawPlayer() {
     ctx.save();
@@ -206,10 +218,11 @@ function drawPlatforms() {
             // Pixelerad rendering för tiles
             ctx.imageSmoothingEnabled = false;
 
-            // Beräkna faktisk plattformsbredd baserat på tiles
+            // Beräkna faktisk plattformsstorlek baserat på tiles
             const tilesX = Math.round(platform.width / tileWidth);
-            const actualWidth = tilesX * tileWidth;
             const tilesY = Math.ceil(platform.height / tileHeight);
+            const actualWidth = tilesX * tileWidth;
+            const actualHeight = tilesY * tileHeight;
 
             // Rita tiles i ett grid
             for (let row = 0; row < tilesY; row++) {
@@ -226,8 +239,9 @@ function drawPlatforms() {
                 }
             }
 
-            // Uppdatera plattformens faktiska bredd för korrekt kollision
+            // Uppdatera plattformens faktiska storlek för korrekt kollision
             platform.actualWidth = actualWidth;
+            platform.actualHeight = actualHeight;
         } else {
             // Fallback: färgad rektangel medan tiles laddar
             ctx.fillStyle = platform.color;
@@ -441,20 +455,22 @@ function update() {
 
     // Kollision med plattformar
     player.isGrounded = false;
+    const playerHitbox = getPlayerHitbox();
 
     platforms.forEach(platform => {
-        // Använd actualWidth om den finns, annars width
+        // Använd actualWidth och actualHeight om de finns, annars width/height
         const platformWidth = platform.actualWidth || platform.width;
+        const platformHeight = platform.actualHeight || platform.height;
         const collisionBox = {
             x: platform.x,
             y: platform.y,
             width: platformWidth,
-            height: platform.height
+            height: platformHeight
         };
 
-        if (checkCollision(player, collisionBox)) {
+        if (checkCollision(playerHitbox, collisionBox)) {
             // Kollidera från ovan (landa på plattform)
-            if (player.velocityY > 0 && player.y + player.height - player.velocityY <= platform.y) {
+            if (player.velocityY > 0 && playerHitbox.y + playerHitbox.height - player.velocityY <= platform.y) {
                 player.y = platform.y - player.height;
                 player.velocityY = 0;
                 player.isGrounded = true;
@@ -478,7 +494,7 @@ function update() {
 
     // Samla mynt
     coins.forEach(coin => {
-        if (!coin.collected && checkCollision(player, coin)) {
+        if (!coin.collected && checkCollision(playerHitbox, coin)) {
             coin.collected = true;
             score += 10;
             // Poängräknare borttagen från UI
@@ -487,7 +503,7 @@ function update() {
 
     // Kollision med hinder
     obstacles.forEach(obstacle => {
-        if (checkCollision(player, obstacle)) {
+        if (checkCollision(playerHitbox, obstacle)) {
             // Reset till start
             player.x = 150;
             player.y = 200;
