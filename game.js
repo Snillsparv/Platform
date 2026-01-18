@@ -200,15 +200,16 @@ function drawPlatforms() {
     platforms.forEach(platform => {
         // Om tiles-bilden är laddad, använd den, annars fallback till färg
         if (tilesImage.complete && tilesImage.naturalWidth > 0) {
-            const tileWidth = tilesImage.width;
+            const tileWidth = tilesImage.width; // Hela bildens bredd = en tile
             const tileHeight = 80; // Alltid 80px höga tiles
 
             // Pixelerad rendering för tiles
             ctx.imageSmoothingEnabled = false;
 
-            // Beräkna hur många tiles som behövs horisontellt och vertikalt
-            const tilesX = Math.round(platform.width / tileWidth); // Avrunda till närmaste hela antal
-            const tilesY = Math.ceil(platform.height / tileHeight); // Antal tiles vertikalt
+            // Beräkna faktisk plattformsbredd baserat på tiles
+            const tilesX = Math.round(platform.width / tileWidth);
+            const actualWidth = tilesX * tileWidth;
+            const tilesY = Math.ceil(platform.height / tileHeight);
 
             // Rita tiles i ett grid
             for (let row = 0; row < tilesY; row++) {
@@ -219,11 +220,14 @@ function drawPlatforms() {
                     // Rita hela tiles (ingen klippning)
                     ctx.drawImage(
                         tilesImage,
-                        0, 0, tileWidth, tilesImage.height,  // Source (hela bilden)
-                        x, y, tileWidth, tileHeight  // Destination (80px höjd)
+                        0, 0, tileWidth, tilesImage.height,
+                        x, y, tileWidth, tileHeight
                     );
                 }
             }
+
+            // Uppdatera plattformens faktiska bredd för korrekt kollision
+            platform.actualWidth = actualWidth;
         } else {
             // Fallback: färgad rektangel medan tiles laddar
             ctx.fillStyle = platform.color;
@@ -234,7 +238,6 @@ function drawPlatforms() {
                 platform.height
             );
 
-            // Kant/skugga
             ctx.strokeStyle = '#654321';
             ctx.lineWidth = 2;
             ctx.strokeRect(
@@ -417,10 +420,9 @@ function update() {
         player.jumpCount = 1;
     }
 
-    // Ladda flyg-energi på marken
-    if (player.isGrounded && player.flyEnergy < MAX_FLY_ENERGY) {
-        player.flyEnergy += FLY_ENERGY_RECHARGE;
-        if (player.flyEnergy > MAX_FLY_ENERGY) player.flyEnergy = MAX_FLY_ENERGY;
+    // Återställ flyg-energi omedelbart när man landar
+    if (player.isGrounded) {
+        player.flyEnergy = MAX_FLY_ENERGY;
     }
 
     // Gravitation
@@ -441,7 +443,16 @@ function update() {
     player.isGrounded = false;
 
     platforms.forEach(platform => {
-        if (checkCollision(player, platform)) {
+        // Använd actualWidth om den finns, annars width
+        const platformWidth = platform.actualWidth || platform.width;
+        const collisionBox = {
+            x: platform.x,
+            y: platform.y,
+            width: platformWidth,
+            height: platform.height
+        };
+
+        if (checkCollision(player, collisionBox)) {
             // Kollidera från ovan (landa på plattform)
             if (player.velocityY > 0 && player.y + player.height - player.velocityY <= platform.y) {
                 player.y = platform.y - player.height;
