@@ -18,7 +18,7 @@ const JUMP_FORCE = -10;
 const MOVE_SPEED = 4.5;
 const FLY_SLOW_FACTOR = 0.7; // Hur mycket flygningen bromsar fallet (lägre = mer bromsning)
 const MAX_FLY_ENERGY = 100;
-const FLY_ENERGY_DRAIN = 2;
+const FLY_ENERGY_DRAIN = 1;
 const FLY_ENERGY_RECHARGE = 1.5;
 
 // Spelarens tillstånd
@@ -55,6 +55,7 @@ window.addEventListener('keyup', (e) => {
 // Spelvariabler
 let score = 0;
 let gameTime = 0;
+let gameStarted = false;
 
 // Plattformar
 const platforms = [
@@ -346,6 +347,15 @@ function drawCloud(x, y) {
 
 // Uppdatera spellogik
 function update() {
+    // Vänta på att spelet startar
+    if (!gameStarted) {
+        // Starta spelet när någon tangent trycks
+        if (Object.keys(keys).some(key => keys[key])) {
+            gameStarted = true;
+        }
+        return; // Uppdatera inte spelet förrän det har startat
+    }
+
     gameTime++;
 
     // Hantera input
@@ -449,6 +459,45 @@ function update() {
     }
 }
 
+// Rita välkomstskärm
+function drawWelcomeScreen() {
+    // Halv-transparent overlay
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Textruta bakgrund
+    const boxWidth = 900;
+    const boxHeight = 350;
+    const boxX = (canvas.width - boxWidth) / 2;
+    const boxY = (canvas.height - boxHeight) / 2;
+
+    ctx.fillStyle = 'rgba(139, 69, 19, 0.95)';
+    ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+
+    // Ram runt rutan
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+    // Text
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 48px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Välkommen till Sparvland, Sparven!', canvas.width / 2, boxY + 100);
+
+    ctx.font = 'bold 38px Arial';
+    ctx.fillStyle = '#FFA500';
+    ctx.fillText('Helgad vare SPARVKUNGEN,', canvas.width / 2, boxY + 170);
+    ctx.fillText('rundast av alla runda ting!!!', canvas.width / 2, boxY + 220);
+
+    // Instruktion
+    ctx.font = '32px Arial';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText('Tryck på valfri tangent för att börja', canvas.width / 2, boxY + 300);
+
+    ctx.textAlign = 'left';
+}
+
 // Rita allt
 function draw() {
     // Rensa canvas
@@ -461,6 +510,11 @@ function draw() {
     drawCoins();
     drawObstacles();
     drawPlayer();
+
+    // Rita välkomstskärm om spelet inte har startat
+    if (!gameStarted) {
+        drawWelcomeScreen();
+    }
 }
 
 // Huvudloop
