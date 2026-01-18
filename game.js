@@ -3,13 +3,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Spelkonstanter
-const GRAVITY = 0.65;
-const JUMP_FORCE = -18;
+const GRAVITY = 0.45;
+const JUMP_FORCE = -16;
 const MOVE_SPEED = 4.5;
-const FLY_FORCE = -4;
+const FLY_SLOW_FACTOR = 0.7; // Hur mycket flygningen bromsar fallet (lägre = mer bromsning)
 const MAX_FLY_ENERGY = 100;
-const FLY_ENERGY_DRAIN = 2.5;
-const FLY_ENERGY_RECHARGE = 1.8;
+const FLY_ENERGY_DRAIN = 2;
+const FLY_ENERGY_RECHARGE = 1.5;
 
 // Spelarens tillstånd
 const player = {
@@ -318,13 +318,6 @@ function update() {
         keys.wasSpacePressed = false;
     }
 
-    // Flygförmåga (håll mellanslag)
-    if (keys[' '] && player.flyEnergy > 0 && !player.isGrounded) {
-        player.velocityY += FLY_FORCE * 0.2; // Mjukare flygning
-        player.flyEnergy -= FLY_ENERGY_DRAIN;
-        if (player.flyEnergy < 0) player.flyEnergy = 0;
-    }
-
     // Ladda flyg-energi på marken
     if (player.isGrounded && player.flyEnergy < MAX_FLY_ENERGY) {
         player.flyEnergy += FLY_ENERGY_RECHARGE;
@@ -333,6 +326,13 @@ function update() {
 
     // Gravitation
     player.velocityY += GRAVITY;
+
+    // Flygförmåga (bromsar fallet istället för att lyfta)
+    if (keys[' '] && player.flyEnergy > 0 && !player.isGrounded && player.velocityY > 0) {
+        player.velocityY *= FLY_SLOW_FACTOR; // Bromsa fallet
+        player.flyEnergy -= FLY_ENERGY_DRAIN;
+        if (player.flyEnergy < 0) player.flyEnergy = 0;
+    }
 
     // Uppdatera position
     player.x += player.velocityX;
