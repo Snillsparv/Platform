@@ -165,7 +165,7 @@ function drawPlayer() {
     if (isFlying) {
         // Använd flygsprite när spelaren bromsar fallet
         currentSprite = sparvFlygSprite;
-    } else if (player.isGrounded && Math.abs(player.velocityX) > 0) {
+    } else if (player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight'])) {
         // Gånganimation: växla mellan sprite 1 och 2 baserat på tid
         const walkCycle = Math.floor(gameTime / 15) % 2; // Byt var 15:e frame (långsammare)
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
@@ -187,26 +187,7 @@ function drawPlayer() {
 
     ctx.restore();
 
-    // Rita flyg-energimätare
-    const barWidth = 90;
-    const barHeight = 12;
-    const barX = player.x - camera.x - 5;
-    const barY = player.y - camera.y - 25;
-
-    // Bakgrund
-    ctx.fillStyle = '#333';
-    ctx.fillRect(barX, barY, barWidth, barHeight);
-
-    // Energi
-    const energyWidth = (player.flyEnergy / MAX_FLY_ENERGY) * barWidth;
-    const energyColor = player.flyEnergy > 30 ? '#3498db' : '#e74c3c';
-    ctx.fillStyle = energyColor;
-    ctx.fillRect(barX, barY, energyWidth, barHeight);
-
-    // Ram
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(barX, barY, barWidth, barHeight);
+    // Flyg-energimätare gömd (inte längre synlig)
 }
 
 // Rita plattformar
@@ -471,25 +452,36 @@ function update() {
         };
 
         if (checkCollision(playerHitbox, collisionBox)) {
+            // Beräkna överlappning från olika håll
+            const overlapLeft = (playerHitbox.x + playerHitbox.width) - collisionBox.x;
+            const overlapRight = (collisionBox.x + collisionBox.width) - playerHitbox.x;
+            const overlapTop = (playerHitbox.y + playerHitbox.height) - collisionBox.y;
+            const overlapBottom = (collisionBox.y + collisionBox.height) - playerHitbox.y;
+
+            // Hitta minsta överlappningen
+            const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+
             // Kollidera från ovan (landa på plattform)
-            if (player.velocityY > 0 && playerHitbox.y + playerHitbox.height - player.velocityY <= platform.y) {
-                player.y = platform.y - player.height;
+            if (minOverlap === overlapTop && player.velocityY >= 0) {
+                player.y = collisionBox.y - player.height;
                 player.velocityY = 0;
                 player.isGrounded = true;
                 player.jumpCount = 0;
             }
             // Kollidera från nedan (slå i huvudet)
-            else if (player.velocityY < 0 && player.y - player.velocityY >= platform.y + platform.height) {
-                player.y = platform.y + platform.height;
+            else if (minOverlap === overlapBottom && player.velocityY < 0) {
+                player.y = collisionBox.y + collisionBox.height;
                 player.velocityY = 0;
             }
-            // Kollidera från sidan
-            else {
-                if (player.velocityX > 0) {
-                    player.x = platform.x - player.width;
-                } else if (player.velocityX < 0) {
-                    player.x = platform.x + platform.width;
-                }
+            // Kollidera från vänster
+            else if (minOverlap === overlapLeft) {
+                player.x = collisionBox.x - player.width;
+                player.velocityX = 0;
+            }
+            // Kollidera från höger
+            else if (minOverlap === overlapRight) {
+                player.x = collisionBox.x + collisionBox.width;
+                player.velocityX = 0;
             }
         }
     });
