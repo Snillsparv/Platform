@@ -131,15 +131,17 @@ function checkCollision(rect1, rect2) {
            rect1.y + rect1.height > rect2.y;
 }
 
-// Hämta spelarens hitbox (mindre än spriten)
+// Hämta spelarens hitbox (smalare än spriten men samma höjd)
 function getPlayerHitbox() {
-    const hitboxSize = 60; // Mindre än 80px sprite
-    const offset = (player.width - hitboxSize) / 2;
+    const hitboxWidth = 50; // Smalare än 80px sprite
+    const hitboxHeight = 70; // Nästan lika hög som spriten
+    const offsetX = (player.width - hitboxWidth) / 2;
+    const offsetY = (player.height - hitboxHeight) / 2;
     return {
-        x: player.x + offset,
-        y: player.y + offset,
-        width: hitboxSize,
-        height: hitboxSize
+        x: player.x + offsetX,
+        y: player.y + offsetY,
+        width: hitboxWidth,
+        height: hitboxHeight
     };
 }
 
