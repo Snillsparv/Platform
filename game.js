@@ -158,11 +158,11 @@ function drawPlayer() {
     }
 
     // Välj rätt sprite baserat på spelarens tillstånd
-    let currentSprite = sparvSprite1; // Standardsprite när man står still
-
     // Kontrollera om spelaren flyger (i luften + använder flygförmåga)
     const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
-    const isWalking = player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight']);
+    const isWalking = (keys['ArrowLeft'] || keys['ArrowRight']); // Ta bort isGrounded-check för stabilitet
+
+    let currentSprite;
 
     if (isFlying) {
         // Använd flygsprite när spelaren bromsar fallet
@@ -175,9 +175,9 @@ function drawPlayer() {
         // INVERTERAT: Börja med sparv_2 först
         currentSprite = walkCycle === 0 ? sparvSprite2 : sparvSprite1;
     } else {
-        // Stå still med sprite 1
-        currentSprite = sparvSprite1;
-        // VIKTIGT: Återställ INTE walkAnimationTime här, det orsakar flimmer!
+        // När man står still: använd samma sprite som senaste walk-framen (inte sparv_1 hårdkodat!)
+        const walkCycle = Math.floor(walkAnimationTime / 90) % 2;
+        currentSprite = walkCycle === 0 ? sparvSprite2 : sparvSprite1;
     }
 
     // Rita vald sprite om den är laddad, annars fallback
