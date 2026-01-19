@@ -167,7 +167,7 @@ function drawPlayer() {
         currentSprite = sparvFlygSprite;
     } else if (player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight'])) {
         // Gånganimation: växla mellan sprite 1 och 2 baserat på tid
-        const walkCycle = Math.floor(gameTime / 15) % 2; // Byt var 15:e frame (långsammare)
+        const walkCycle = Math.floor(gameTime / 20) % 2; // Byt var 20:e frame (ännu långsammare)
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
     } else {
         // Stående still eller i luften utan att flyga
@@ -432,6 +432,10 @@ function update() {
         if (player.flyEnergy < 0) player.flyEnergy = 0;
     }
 
+    // Spara gamla position för kollisionskoll
+    const oldX = player.x;
+    const oldY = player.y;
+
     // Uppdatera position
     player.x += player.velocityX;
     player.y += player.velocityY;
@@ -473,14 +477,14 @@ function update() {
                 player.y = collisionBox.y + collisionBox.height;
                 player.velocityY = 0;
             }
-            // Kollidera från vänster
-            else if (minOverlap === overlapLeft) {
-                player.x = collisionBox.x - player.width;
+            // Kollidera från vänster (går åt höger mot vägg)
+            else if (minOverlap === overlapLeft && player.velocityX > 0) {
+                player.x = oldX; // Återställ till gamla positionen istället för att justera
                 player.velocityX = 0;
             }
-            // Kollidera från höger
-            else if (minOverlap === overlapRight) {
-                player.x = collisionBox.x + collisionBox.width;
+            // Kollidera från höger (går åt vänster mot vägg)
+            else if (minOverlap === overlapRight && player.velocityX < 0) {
+                player.x = oldX; // Återställ till gamla positionen istället för att justera
                 player.velocityX = 0;
             }
         }
