@@ -170,7 +170,7 @@ function drawPlayer() {
     } else if (isWalking) {
         // Gånganimation: växla mellan sprite 1 och 2 baserat på separat timer
         walkAnimationTime++; // Öka bara när man går
-        const walkCycle = Math.floor(walkAnimationTime / 15) % 2; // Byt var 15:e frame
+        const walkCycle = Math.floor(walkAnimationTime / 30) % 2; // Byt var 30:e frame (långsammare)
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
     } else {
         // Stå still med sprite 1
@@ -190,6 +190,17 @@ function drawPlayer() {
     }
 
     ctx.restore();
+
+    // TEMPORÄR DEBUG: Visa vilken sprite som används
+    if (isWalking) {
+        const walkCycle = Math.floor(walkAnimationTime / 30) % 2;
+        ctx.fillStyle = walkCycle === 0 ? '#FF0000' : '#00FF00'; // Röd för sprite 1, grön för sprite 2
+        ctx.fillRect(player.x - camera.x + 5, player.y - camera.y + 5, 15, 15);
+
+        ctx.fillStyle = '#FFF';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(walkCycle === 0 ? '1' : '2', player.x - camera.x + 9, player.y - camera.y + 16);
+    }
 
     // Flyg-energimätare gömd (inte längre synlig)
 }
