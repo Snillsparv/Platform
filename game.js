@@ -164,8 +164,19 @@ function drawPlayer() {
     const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
     const isWalking = player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight']);
 
-    // TEMPORÄRT TEST: Använd BARA sparv_2 för att verifiera att den fungerar
-    currentSprite = sparvSprite2;
+    if (isFlying) {
+        // Använd flygsprite när spelaren bromsar fallet
+        currentSprite = sparvFlygSprite;
+    } else if (isWalking) {
+        // Gånganimation: växla mellan sprite 1 och 2
+        walkAnimationTime++;
+        const walkCycle = Math.floor(walkAnimationTime / 20) % 2;
+        currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
+    } else {
+        // Stå still med sprite 1
+        currentSprite = sparvSprite1;
+        walkAnimationTime = 0;
+    }
 
     // Rita vald sprite om den är laddad, annars fallback
     if (currentSprite.complete && currentSprite.naturalWidth > 0) {
