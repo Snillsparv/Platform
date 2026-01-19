@@ -70,6 +70,7 @@ window.addEventListener('keyup', (e) => {
 let score = 0;
 let gameTime = 0;
 let gameStarted = false;
+let walkAnimationTime = 0;
 
 // Plattformar (bredder justerade för hela tiles)
 const platforms = [
@@ -161,17 +162,20 @@ function drawPlayer() {
 
     // Kontrollera om spelaren flyger (i luften + använder flygförmåga)
     const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
+    const isWalking = player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight']);
 
     if (isFlying) {
         // Använd flygsprite när spelaren bromsar fallet
         currentSprite = sparvFlygSprite;
-    } else if (player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight'])) {
-        // Gånganimation: växla mellan sprite 1 och 2 baserat på tid
-        const walkCycle = Math.floor(gameTime / 20) % 2; // Byt var 20:e frame (ännu långsammare)
+    } else if (isWalking) {
+        // Gånganimation: växla mellan sprite 1 och 2 baserat på separat timer
+        walkAnimationTime++; // Öka bara när man går
+        const walkCycle = Math.floor(walkAnimationTime / 15) % 2; // Byt var 15:e frame
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
     } else {
         // Stående still eller i luften utan att flyga
         currentSprite = sparvSprite1;
+        walkAnimationTime = 0; // Återställ animationstimer när man inte går
     }
 
     // Rita vald sprite om den är laddad, annars fallback
