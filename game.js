@@ -170,13 +170,14 @@ function drawPlayer() {
     } else if (isWalking) {
         // Gånganimation: växla mellan sprite 1 och 2 (MYCKET LÅNGSAM för test)
         walkAnimationTime++;
+        if (walkAnimationTime >= 180) walkAnimationTime = 0; // Loopa efter 180 frames (3 sekunder)
         const walkCycle = Math.floor(walkAnimationTime / 90) % 2; // 90 frames = 1.5 sekunder per sprite
         // INVERTERAT: Börja med sparv_2 först
         currentSprite = walkCycle === 0 ? sparvSprite2 : sparvSprite1;
     } else {
         // Stå still med sprite 1
         currentSprite = sparvSprite1;
-        walkAnimationTime = 0;
+        // VIKTIGT: Återställ INTE walkAnimationTime här, det orsakar flimmer!
     }
 
     // Rita vald sprite om den är laddad, annars fallback
