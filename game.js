@@ -164,18 +164,20 @@ function drawPlayer() {
     const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
     const isWalking = player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight']);
 
+    // Öka animationstimer hela tiden (låter den loopa naturligt)
+    walkAnimationTime++;
+    if (walkAnimationTime >= 60) walkAnimationTime = 0; // Återställ efter 60 frames (1 sekund)
+
     if (isFlying) {
         // Använd flygsprite när spelaren bromsar fallet
         currentSprite = sparvFlygSprite;
     } else if (isWalking) {
-        // Gånganimation: växla mellan sprite 1 och 2 baserat på separat timer
-        walkAnimationTime++; // Öka bara när man går
+        // Gånganimation: växla mellan sprite 1 och 2 baserat på timer
         const walkCycle = Math.floor(walkAnimationTime / 30) % 2; // Byt var 30:e frame (långsammare)
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
     } else {
         // Stå still med sprite 1
         currentSprite = sparvSprite1;
-        walkAnimationTime = 0; // Återställ animationstimer när man inte går
     }
 
     // Rita vald sprite om den är laddad, annars fallback
