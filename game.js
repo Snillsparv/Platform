@@ -173,8 +173,8 @@ function drawPlayer() {
         const walkCycle = Math.floor(walkAnimationTime / 15) % 2; // Byt var 15:e frame
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
     } else {
-        // Stående still eller i luften utan att flyga
-        currentSprite = sparvSprite1;
+        // TEST: Använd sprite 2 när man står still för att se om den fungerar
+        currentSprite = sparvSprite2;
         walkAnimationTime = 0; // Återställ animationstimer när man inte går
     }
 
