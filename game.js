@@ -168,9 +168,9 @@ function drawPlayer() {
         // Använd flygsprite när spelaren bromsar fallet
         currentSprite = sparvFlygSprite;
     } else if (isWalking) {
-        // Gånganimation: växla mellan sprite 1 och 2
+        // Gånganimation: växla mellan sprite 1 och 2 (MYCKET LÅNGSAM för test)
         walkAnimationTime++;
-        const walkCycle = Math.floor(walkAnimationTime / 20) % 2;
+        const walkCycle = Math.floor(walkAnimationTime / 90) % 2; // 90 frames = 1.5 sekunder per sprite
         // INVERTERAT: Börja med sparv_2 först
         currentSprite = walkCycle === 0 ? sparvSprite2 : sparvSprite1;
     } else {
@@ -194,17 +194,17 @@ function drawPlayer() {
 
     // STOR DEBUG-INDIKATOR: Visa vilken sprite som används
     if (isWalking) {
-        const walkCycle = Math.floor(walkAnimationTime / 20) % 2;
+        const walkCycle = Math.floor(walkAnimationTime / 90) % 2;
 
         // Stor färgad ruta
         ctx.fillStyle = walkCycle === 0 ? '#00FF00' : '#FF0000'; // Grön för sparv_2, röd för sparv_1
-        ctx.fillRect(player.x - camera.x, player.y - camera.y - 30, 80, 25);
+        ctx.fillRect(player.x - camera.x, player.y - camera.y - 30, 120, 25);
 
-        // Stor text
+        // Stor text med timer-info
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 20px monospace';
+        ctx.font = 'bold 16px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(walkCycle === 0 ? 'SPARV_2' : 'SPARV_1', player.x - camera.x + 40, player.y - camera.y - 10);
+        ctx.fillText((walkCycle === 0 ? 'SPARV_2 ' : 'SPARV_1 ') + '(t=' + walkAnimationTime + ')', player.x - camera.x + 60, player.y - camera.y - 10);
         ctx.textAlign = 'left';
     }
 
