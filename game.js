@@ -164,21 +164,8 @@ function drawPlayer() {
     const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
     const isWalking = player.isGrounded && (keys['ArrowLeft'] || keys['ArrowRight']);
 
-    // Öka animationstimer hela tiden (låter den loopa naturligt)
-    walkAnimationTime++;
-    if (walkAnimationTime >= 60) walkAnimationTime = 0; // Återställ efter 60 frames (1 sekund)
-
-    if (isFlying) {
-        // Använd flygsprite när spelaren bromsar fallet
-        currentSprite = sparvFlygSprite;
-    } else if (isWalking) {
-        // Gånganimation: växla mellan sprite 1 och 2 baserat på timer
-        const walkCycle = Math.floor(walkAnimationTime / 30) % 2; // Byt var 30:e frame (långsammare)
-        currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
-    } else {
-        // Stå still med sprite 1
-        currentSprite = sparvSprite1;
-    }
+    // TEMPORÄRT TEST: Använd BARA sparv_2 för att verifiera att den fungerar
+    currentSprite = sparvSprite2;
 
     // Rita vald sprite om den är laddad, annars fallback
     if (currentSprite.complete && currentSprite.naturalWidth > 0) {
@@ -192,17 +179,6 @@ function drawPlayer() {
     }
 
     ctx.restore();
-
-    // TEMPORÄR DEBUG: Visa vilken sprite som används
-    if (isWalking) {
-        const walkCycle = Math.floor(walkAnimationTime / 30) % 2;
-        ctx.fillStyle = walkCycle === 0 ? '#FF0000' : '#00FF00'; // Röd för sprite 1, grön för sprite 2
-        ctx.fillRect(player.x - camera.x + 5, player.y - camera.y + 5, 15, 15);
-
-        ctx.fillStyle = '#FFF';
-        ctx.font = 'bold 12px monospace';
-        ctx.fillText(walkCycle === 0 ? '1' : '2', player.x - camera.x + 9, player.y - camera.y + 16);
-    }
 
     // Flyg-energimätare gömd (inte längre synlig)
 }
