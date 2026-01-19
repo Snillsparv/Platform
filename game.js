@@ -424,13 +424,10 @@ function update() {
     // Återställ flyg-energi omedelbart när man landar
     if (player.isGrounded) {
         player.flyEnergy = MAX_FLY_ENERGY;
-        player.velocityY = 0; // Sätt hastighet till 0 när man står på marken
     }
 
-    // Gravitation (bara i luften)
-    if (!player.isGrounded) {
-        player.velocityY += GRAVITY;
-    }
+    // Gravitation
+    player.velocityY += GRAVITY;
 
     // Flygförmåga (bromsar fallet istället för att lyfta)
     if (keys[' '] && player.flyEnergy > 0 && !player.isGrounded && player.velocityY > 0) {
