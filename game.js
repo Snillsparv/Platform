@@ -158,7 +158,7 @@ function drawPlayer() {
     }
 
     // Välj rätt sprite baserat på spelarens tillstånd
-    let currentSprite = sparvSprite1; // Default
+    let currentSprite = sparvSprite2; // Test: Använd sprite 2 som default för att se om den fungerar
 
     // Kontrollera om spelaren flyger (i luften + använder flygförmåga)
     const isFlying = !player.isGrounded && keys[' '] && player.flyEnergy > 0 && player.velocityY > 0;
