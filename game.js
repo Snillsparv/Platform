@@ -15,12 +15,18 @@ bgCloudsImage.src = 'images/bg_clouds.png';
 // Ladda sparv-sprites
 const sparvSprite1 = new Image();
 sparvSprite1.src = 'images/sparv_1.png';
+sparvSprite1.onload = () => console.log('✅ sparv_1.png loaded successfully!', sparvSprite1.width + 'x' + sparvSprite1.height);
+sparvSprite1.onerror = () => console.error('❌ sparv_1.png failed to load!');
 
 const sparvSprite2 = new Image();
 sparvSprite2.src = 'images/sparv_2.png';
+sparvSprite2.onload = () => console.log('✅ sparv_2.png loaded successfully!', sparvSprite2.width + 'x' + sparvSprite2.height);
+sparvSprite2.onerror = () => console.error('❌ sparv_2.png failed to load!');
 
 const sparvFlygSprite = new Image();
 sparvFlygSprite.src = 'images/sparv_flyg.png';
+sparvFlygSprite.onload = () => console.log('✅ sparv_flyg.png loaded successfully!', sparvFlygSprite.width + 'x' + sparvFlygSprite.height);
+sparvFlygSprite.onerror = () => console.error('❌ sparv_flyg.png failed to load!');
 
 // Ladda plattformstiles
 const tilesImage = new Image();
@@ -147,6 +153,7 @@ function getPlayerHitbox() {
 }
 
 // Rita sparven (med animerad sprite)
+let debugFrameCount = 0; // För att inte spamma konsolen
 function drawPlayer() {
     ctx.save();
     ctx.translate(player.x - camera.x, player.y - camera.y);
@@ -172,11 +179,35 @@ function drawPlayer() {
         walkAnimationTime++; // Öka bara när man går
         const walkCycle = Math.floor(walkAnimationTime / 15) % 2; // Byt var 15:e frame
         currentSprite = walkCycle === 0 ? sparvSprite1 : sparvSprite2;
+
+        // Debug: Logga varje 60:e frame (varje sekund ungefär)
+        if (debugFrameCount % 60 === 0) {
+            console.log('🚶 Walking animation:',
+                'walkTime=' + walkAnimationTime,
+                'walkCycle=' + walkCycle,
+                'sprite=' + (walkCycle === 0 ? 'sparv_1' : 'sparv_2'));
+        }
     } else {
         // TEST: Använd sprite 2 när man står still för att se om den fungerar
         currentSprite = sparvSprite2;
         walkAnimationTime = 0; // Återställ animationstimer när man inte går
+
+        // Debug: Logga var 120:e frame när man står still
+        if (debugFrameCount % 120 === 0) {
+            console.log('🧍 Standing still, using sparv_2');
+        }
     }
+
+    // Debug: Kontrollera sprite-status var 120:e frame
+    if (debugFrameCount % 120 === 0) {
+        console.log('📸 Current sprite:',
+            'src=' + currentSprite.src.split('/').pop(),
+            'complete=' + currentSprite.complete,
+            'naturalWidth=' + currentSprite.naturalWidth,
+            'naturalHeight=' + currentSprite.naturalHeight);
+    }
+
+    debugFrameCount++;
 
     // Rita vald sprite om den är laddad, annars fallback
     if (currentSprite.complete && currentSprite.naturalWidth > 0) {
@@ -185,6 +216,7 @@ function drawPlayer() {
         ctx.drawImage(currentSprite, 0, 0, player.width, player.height);
     } else {
         // Fallback: enkel brun rektangel medan sprite laddar
+        console.log('⚠️ Sprite not loaded yet, using fallback');
         ctx.fillStyle = '#8B4513';
         ctx.fillRect(0, 0, player.width, player.height);
     }
